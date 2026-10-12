@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GYM TRACKER — Elite Workout & Analytics</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome (Icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="background-decorations">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-logo">
+          <i class="fa-solid fa-dumbbell"></i>
+        </div>
+        <h1 class="brand-title">GYM <span class="gradient-text">TRACKER</span></h1>
+      </div>
+
+      <div class="header-right">
+        <!-- Streak Badge -->
+        <div class="streak-badge" id="header-streak-badge" title="Current Daily Workout Streak">
+          <i class="fa-solid fa-fire streak-icon"></i>
+          <span class="streak-count" id="streak-count">0</span>
+          <span class="streak-label">day streak</span>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="nav-tabs" role="tablist">
+          <button class="nav-tab active" id="tab-calendar" data-target="calendar-section" role="tab" aria-selected="true">
+            <i class="fa-regular fa-calendar-days"></i>
+            <span>Calendar</span>
+          </button>
+          <button class="nav-tab" id="tab-analytics" data-target="analytics-section" role="tab" aria-selected="false">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Analytics</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- CALENDAR SECTION -->
+    <section id="calendar-section" class="app-section active-section">
+      <!-- Calendar Controls & Legend -->
+      <div class="calendar-toolbar glass-card">
+        <div class="month-navigation">
+          <button class="nav-arrow-btn" id="prev-month-btn" aria-label="Previous Month">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <div class="current-month-display">
+            <h2 id="current-month-year">October 2026</h2>
+          </div>
+          <button class="nav-arrow-btn" id="next-month-btn" aria-label="Next Month">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+          <button class="btn-today" id="today-btn">Today</button>
+        </div>
+
+        <!-- Muscle Group Color Legend -->
+        <div class="muscle-legend">
+          <div class="legend-item"><span class="legend-dot color-back"></span>Back</div>
+          <div class="legend-item"><span class="legend-dot color-arms"></span>Arms</div>
+          <div class="legend-item"><span class="legend-dot color-legs"></span>Legs</div>
+          <div class="legend-item"><span class="legend-dot color-chest-shoulder"></span>Chest+Shoulder</div>
+          <div class="legend-item"><span class="legend-dot color-shoulder-chest"></span>Shoulder+Chest</div>
+          <div class="legend-item"><span class="legend-dot color-rest"></span>Rest Day</div>
+        </div>
+      </div>
+
+      <!-- Calendar Container -->
+      <div class="calendar-wrapper glass-card">
+        <!-- Weekday Headers -->
+        <div class="weekdays-grid">
+          <div class="weekday-header">Mon</div>
+          <div class="weekday-header">Tue</div>
+          <div class="weekday-header">Wed</div>
+          <div class="weekday-header">Thu</div>
+          <div class="weekday-header">Fri</div>
+          <div class="weekday-header">Sat</div>
+          <div class="weekday-header">Sun</div>
+        </div>
+
+        <!-- Calendar Cells 7xN Grid -->
+        <div class="calendar-grid" id="calendar-grid">
+          <!-- Dynamically populated via app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ANALYTICS SECTION -->
+    <section id="analytics-section" class="app-section hidden-section">
+      <!-- Summary Statistics Row -->
+      <div class="analytics-summary-grid">
+        <div class="summary-card glass-card">
+          <div class="summary-icon icon-cyan">
+            <i class="fa-solid fa-dumbbell"></i>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Total Workouts</span>
+            <span class="summary-value" id="stat-total-workouts">0</span>
+            <span class="summary-sub" id="stat-total-sub">Completed sessions</span>
+          </div>
+        </div>
+
+        <div class="summary-card glass-card">
+          <div class="summary-icon icon-orange">
+            <i class="fa-solid fa-fire"></i>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Current Streak</span>
+            <span class="summary-value" id="stat-current-streak">0 days</span>
+            <span class="summary-sub" id="stat-longest-streak">Longest: 0 days</span>
+          </div>
+        </div>
+
+        <div class="summary-card glass-card">
+          <div class="summary-icon icon-purple">
+            <i class="fa-solid fa-arrow-trend-up"></i>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Weekly Momentum</span>
+            <span class="summary-value" id="stat-week-momentum">0 vs 0</span>
+            <span class="summary-sub" id="stat-week-sub">This week vs last week</span>
+          </div>
+        </div>
+
+        <div class="summary-card glass-card">
+          <div class="summary-icon icon-green">
+            <i class="fa-solid fa-scale-balanced"></i>
+          </div>
+          <div class="summary-info">
+            <span class="summary-label">Latest Body Weight</span>
+            <span class="summary-value" id="stat-latest-weight">-- kg</span>
+            <span class="summary-sub" id="stat-weight-sub">Tracked in workout logs</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Grid -->
+      <div class="charts-grid">
+        <!-- 1. Body Weight Trend -->
+        <div class="chart-card glass-card">
+          <div class="chart-card-header">
+            <div class="chart-title-group">
+              <i class="fa-solid fa-weight-scale chart-title-icon text-cyan"></i>
+              <h3>Body Weight Trend</h3>
+            </div>
+            <span class="chart-badge">kg over time</span>
+          </div>
+          <div class="chart-canvas-container">
+            <canvas id="chart-weight"></canvas>
+            <div class="chart-empty-state" id="empty-weight">No weight logs recorded yet</div>
+          </div>
+        </div>
+
+        <!-- 2. Strength Progression -->
+        <div class="chart-card glass-card">
+          <div class="chart-card-header">
+            <div class="chart-title-group">
+              <i class="fa-solid fa-trophy chart-title-icon text-purple"></i>
+              <h3>Strength Progression</h3>
+            </div>
+            <div class="chart-control">
+              <select id="exercise-select-strength" class="glass-select">
+                <option value="">Select Exercise...</option>
+              </select>
+            </div>
+          </div>
+          <div class="chart-canvas-container">
+            <canvas id="chart-strength"></canvas>
+            <div class="chart-empty-state" id="empty-strength">Select an exercise with logged sets</div>
+          </div>
+        </div>
+
+        <!-- 3. Volume Over Time -->
+        <div class="chart-card glass-card">
+          <div class="chart-card-header">
+            <div class="chart-title-group">
+              <i class="fa-solid fa-chart-column chart-title-icon text-orange"></i>
+              <h3>Volume Over Time</h3>
+            </div>
+            <span class="chart-badge">Total kg × reps</span>
+          </div>
+          <div class="chart-canvas-container">
+            <canvas id="chart-volume"></canvas>
+            <div class="chart-empty-state" id="empty-volume">No volume data available</div>
+          </div>
+        </div>
+
+        <!-- 4. Muscle Distribution -->
+        <div class="chart-card glass-card">
+          <div class="chart-card-header">
+            <div class="chart-title-group">
+              <i class="fa-solid fa-pie-chart chart-title-icon text-pink"></i>
+              <h3>Muscle Group Split</h3>
+            </div>
+            <span class="chart-badge">Session frequency</span>
+          </div>
+          <div class="chart-canvas-container doughnut-container">
+            <canvas id="chart-frequency"></canvas>
+            <div class="chart-empty-state" id="empty-frequency">No workouts recorded yet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personal Records Table -->
+      <div class="records-section glass-card">
+        <div class="records-header">
+          <div class="records-title-group">
+            <i class="fa-solid fa-medal text-gold"></i>
+            <h3>Personal Records & Best Marks</h3>
+          </div>
+          <span class="chart-badge">All-Time Bests</span>
+        </div>
+        <div class="table-responsive">
+          <table class="records-table">
+            <thead>
+              <tr>
+                <th>Exercise</th>
+                <th>Best Weight (kg)</th>
+                <th>Reps @ Best</th>
+                <th>Best Volume Set (kg)</th>
+                <th>Last Achieved</th>
+              </tr>
+            </thead>
+            <tbody id="records-table-body">
+              <tr>
+                <td colspan="5" class="table-empty">Loading personal records...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- WORKOUT MODAL -->
+  <div id="workout-modal" class="modal-overlay hidden-modal" role="dialog" aria-modal="true" aria-labelledby="modal-date-title">
+    <div class="modal-card glass-card">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-subtitle">Workout Session</span>
+          <h2 id="modal-date-title">Monday, October 12, 2026</h2>
+        </div>
+        <button class="modal-close-btn" id="modal-close-btn" aria-label="Close Modal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body Form -->
+      <form id="workout-form" class="modal-form" onsubmit="return false;">
+        <!-- General Fields Row -->
+        <div class="form-row-grid">
+          <!-- Target Muscles -->
+          <div class="form-group">
+            <label for="modal-target-muscles">
+              <i class="fa-solid fa-bullseye"></i> Target Muscle Group <span class="required-star">*</span>
+            </label>
+            <select id="modal-target-muscles" class="glass-select" required>
+              <option value="" disabled selected>Select muscle target...</option>
+              <option value="Back">Back</option>
+              <option value="Arms">Arms</option>
+              <option value="Legs">Legs</option>
+              <option value="Chest+Shoulder">Chest+Shoulder</option>
+              <option value="Shoulder+Chest">Shoulder+Chest</option>
+              <option value="Rest Day">Rest Day</option>
+            </select>
+          </div>
+
+          <!-- Body Weight -->
+          <div class="form-group" id="body-weight-group">
+            <label for="modal-body-weight">
+              <i class="fa-solid fa-weight-scale"></i> Body Weight (kg)
+            </label>
+            <input type="number" step="0.1" min="20" max="350" id="modal-body-weight" class="glass-input" placeholder="e.g. 75.5">
+          </div>
+        </div>
+
+        <!-- Exercises Section -->
+        <div id="exercises-section-wrapper" class="exercises-wrapper">
+          <div class="exercises-section-header">
+            <h3><i class="fa-solid fa-dumbbell"></i> Exercises & Sets</h3>
+            <button type="button" class="btn-secondary btn-sm" id="btn-add-exercise">
+              <i class="fa-solid fa-plus"></i> Add Exercise
+            </button>
+          </div>
+
+          <!-- Exercises Dynamic Container -->
+          <div id="exercises-container" class="exercises-container">
+            <!-- Dynamically populated via modal.js -->
+          </div>
+        </div>
+
+        <!-- Rest Day Banner (shown if rest day) -->
+        <div id="rest-day-notice" class="rest-day-banner hidden">
+          <i class="fa-solid fa-bed"></i>
+          <div>
+            <strong>Rest & Recovery Day</strong>
+            <p>Active recovery or complete rest. No sets needed today!</p>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="form-group">
+          <label for="modal-notes">
+            <i class="fa-regular fa-note-sticky"></i> Session Notes
+          </label>
+          <textarea id="modal-notes" class="glass-textarea" rows="3" placeholder="How did you feel? Energy, form, soreness, pre-workout..."></textarea>
+        </div>
+
+        <!-- Modal Footer Controls -->
+        <div class="modal-footer">
+          <button type="button" class="btn-danger" id="btn-delete-workout" style="display: none;">
+            <i class="fa-regular fa-trash-can"></i> Delete
+          </button>
+          <div class="modal-footer-right">
+            <button type="button" class="btn-secondary" id="btn-cancel-workout">Cancel</button>
+            <button type="submit" class="btn-primary" id="btn-save-workout">
+              <i class="fa-solid fa-check"></i> Save Workout
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Exercise Autocomplete Datalist -->
+  <datalist id="exercise-suggestions-list">
+    <!-- Populated dynamically via API.getExerciseSuggestions -->
+  </datalist>
+
+  <!-- Notification Toast -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Scripts in order -->
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/analytics.js"></script>
+</body>
+</html>
